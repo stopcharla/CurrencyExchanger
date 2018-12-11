@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const should = require('chai').should;
 const utils = require('../../src/utils/utils');
 const Big = require('big-js');
 
@@ -9,20 +8,19 @@ describe("Checking the currency conversion", () => {
         let expectedResponse = { baseCurrency: 'USD', targetCurrency: 'JPY', conversionValue: '112.73' };
         utils.convertCurrency('USD', new Big('1.1425'), 'JPY', new Big('128.79')).then((response) => {
             expect(response).to.be.deep.equal(expectedResponse);
-            done()
+            done();
         }).catch((err) => {
             done(err);
         })
     });
 
     it("checking faulty currency and conversion from base to target", (done) => {
-        let expectedResponse = { baseCurrency: 'USD', targetCurrency: 'JPY', conversionValue: '112.733456' };
         utils.convertCurrency('USD', null, 'JPY', new Big('128.79')).then((response) => {
-            done()
+            done(new Error());
         }).catch((err) => {
-            expect(err).to.be.an('error')
+            expect(err).to.be.an('error');
             done();
-        })
+        });
     });
 
     it("checking null currency name", (done) => {
@@ -38,7 +36,7 @@ describe("Checking the currency conversion", () => {
         let expectedResponse = { baseCurrency: 'USD', targetCurrency: 'JPY', conversionValue: '112.73456' };
         utils.convertCurrency('USD', new Big('1.1425'), 'JPY', new Big('128.79')).then((response) => {
             expect(response.conversionValue).to.be.not.equal(expectedResponse.conversionValue);
-            done()
+            done();
         }).catch((err) => {
             done(err);
         })

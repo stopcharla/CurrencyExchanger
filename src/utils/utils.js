@@ -7,7 +7,7 @@ const Big = require('big-js');
  * @param {*} targetCurrency 
  * @param {*} targetCurrencyValue 
  */
-var convertCurrency = function (baseCurrency, baseCurrencyValue, targetCurrency, targetCurrencyValue, amountToConvert = 1) {
+const convertCurrency = function (baseCurrency, baseCurrencyValue, targetCurrency, targetCurrencyValue, amountToConvert = 1) {
     return new Promise((resolve, reject) => {
         try {
             // get exchange rate of base currency, otherwise fail
@@ -27,7 +27,7 @@ var convertCurrency = function (baseCurrency, baseCurrencyValue, targetCurrency,
  * @param {*} totalTransactions 
  * @param {*} date 
  */
-var addDateObjectToTransactions = function (totalTransactions, date) {
+const addDateObjectToTransactions = function (totalTransactions, date) {
     return totalTransactions.map((transaction) => {
         let datedTransaction = Object.assign({}, transaction);
         datedTransaction.date = date;
@@ -39,7 +39,7 @@ var addDateObjectToTransactions = function (totalTransactions, date) {
  * returns date object for provided date or returns the current day date object
  * @param {*} date 
  */
-var getToday = function (date) {
+const getToday = function (date) {
     if (date === undefined) {
         let today = new Date();
         let timestamp = today.setHours(0, 0, 0, 0) - today.getTimezoneOffset() * 60 * 1000;

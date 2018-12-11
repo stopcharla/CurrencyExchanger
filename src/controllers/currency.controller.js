@@ -24,7 +24,7 @@ class CurrencyController extends BaseController {
      */
     computeCurrency(req, res) {
         this.getECBExchangeRates(utils.getToday(this.lastUpdatedDate)).then(() => {
-            res.json(super.getSuccessResponse({ message: "success" }));
+            res.json(super.getSuccessResponse({ rates: this.rates }));
         }).catch((err) => {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(super.getErrorResponse(err));
         });
@@ -40,6 +40,7 @@ class CurrencyController extends BaseController {
             this.checkIfTransactionsUpdatedToDb(date).then((dbCheck) => {
                 console.log("checkIfTransactionsUpdatedToDb:", dbCheck);
                 if (dbCheck) {
+                    console.log("data already updated for today");
                     resolve();
                 } else {
                     let ECBService = new ECB(request);
@@ -47,7 +48,9 @@ class CurrencyController extends BaseController {
                         this.lastUpdatedDate = response.date;
                         this.rates = response.rates;
                         console.log('currency received now calculating exchanges');
-                        return this.calculateAndStorePossibleCurrencyExchanges();
+                        return this.calculatePossibleCurrencyTransactions();
+                    }).then((transactions) => {
+                        this.insertAllTransactionsToDatabase(transactions);
                     }).then(() => {
                         resolve();
                     }).catch((err) => {
@@ -63,7 +66,7 @@ class CurrencyController extends BaseController {
     /**
      * calculate all currencies conversion to one another then inset to database
      */
-    calculateAndStorePossibleCurrencyExchanges() {
+    calculatePossibleCurrencyTransactions() {
         let promises = []
         this.rates.forEach((baseRate) => {
             let baseCurrency = baseRate.currency;
@@ -76,9 +79,7 @@ class CurrencyController extends BaseController {
         });
         return new Promise((resolve, reject) => {
             Promise.all(promises).then((totalTransactions) => {
-                return this.insertAllTransactionsToDatabase(totalTransactions);
-            }).then((response) => {
-                resolve(response);
+                resolve(totalTransactions);
             }).catch((err) => {
                 reject(err);
             });
@@ -118,6 +119,7 @@ class CurrencyController extends BaseController {
      */
     checkIfTransactionsUpdatedToDb(date) {
         return new Promise((resolve, reject) => {
+
             conversionDbModel.find({ date: date }).limit(1).exec().then((docs) => {
                 if (docs.length == 1) {
                     resolve(true);

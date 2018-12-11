@@ -39,7 +39,7 @@ describe("Checking the ecb service api", () => {
         });
     });
 
-    xit("get rates from xml attributes", (done) => {
+    it("get rates from xml attributes", (done) => {
         let currencyAttributes = [{
             type: 'element',
             name: 'Cube',

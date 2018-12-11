@@ -2,10 +2,12 @@
 
 const config = require('./config'),
     express = require('express'),
+    bodyParser = require('body-parser'),
     currencyRoute = require('../routes/currency.route.js');
 
-var router = express.Router();
+const router = express.Router();
 
+router.use(bodyParser.json());
 /** GET /health-check - Check service health */
 router.get('/health-check', (req, res) => {
     console.log("health check");

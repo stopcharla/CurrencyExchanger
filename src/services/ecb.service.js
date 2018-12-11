@@ -1,4 +1,3 @@
-const config = require('../config/config');
 const Big = require('big-js');
 const parser = require('./currency.parser');
 
@@ -13,7 +12,7 @@ class ECBService {
      * @param {*} url 
      */
     getExchangeRates(url) {
-        let Parser = new parser();
+        const Parser = new parser();
         return new Promise((resolve, reject) => {
 
             this.request.get(url).then((response) => {
@@ -44,7 +43,7 @@ class ECBService {
      * @param {*} currencyElements 
      */
     getRates(currencyElements) {
-        let rates = currencyElements.map((element) => {
+        const rates = currencyElements.map((element) => {
             return ({ currency: element.attributes.currency, rate: new Big(element.attributes.rate) });
         });
         return (rates);

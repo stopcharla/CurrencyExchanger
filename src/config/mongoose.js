@@ -2,11 +2,11 @@ const config = require('./config'),
     mongoose = require('mongoose');
 
 module.exports = function () {
-    console.log('trying to connect to mongo ',config.db);
-    var db = mongoose.connect(config.db, config.mongoAuthOptions);
+    console.log('trying to connect to mongo ', config.db);
+    const db = mongoose.connect(config.db, config.mongoAuthOptions);
 
-    mongoose.connection.on("error", function(err) {
-        console.error("Could not connect to mongo server!",err);
+    mongoose.connection.on("error", function (err) {
+        console.error("Could not connect to mongo server!", err);
         return console.log(err);
     });
 
