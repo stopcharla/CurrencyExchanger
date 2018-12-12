@@ -3,8 +3,7 @@ Obtains the currency exchanges from ecb site and stores all possible currency ex
 
 Steps to use:
 1)Checkout the repo
-2)docker-compose build --no-cache
-3)docker-compose up
+2)docker-compose up
 
 
 api: http://localhost:8080/api/v1/currency/compute
