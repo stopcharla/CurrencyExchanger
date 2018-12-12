@@ -12,3 +12,5 @@ Response to this api will be the original data published by ecb
 
 While the node service is running and mutilple api calls made will only store the currency exchanges once to the db.
 This may duplicate is cases where the timezone is not considered.
+
+Considered only 2 decimal floating pointers as most of currencies consider only upto 2 places
