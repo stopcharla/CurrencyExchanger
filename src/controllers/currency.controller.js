@@ -2,18 +2,17 @@
 
 const config = require('../config/config');
 const BaseController = require('./base.controller');
-const ECB = require('../services').getECBService;
-const request = require('request-promise');
 const utils = require('../utils/utils');
-const conversionDbModel = require('../models').conversionModel;
 const HttpStatus = require('http-status');
 
 class CurrencyController extends BaseController {
 
-    constructor() {
+    constructor(service, model) {
         super();
         this.lastUpdatedDate = undefined;
         this.rates = [];
+        this.service = service;
+        this.model = model;
     }
 
     /**
@@ -23,7 +22,7 @@ class CurrencyController extends BaseController {
      * @param {*} res 
      */
     computeCurrency(req, res) {
-        this.getECBExchangeRates(utils.getToday(this.lastUpdatedDate)).then(() => {
+        this.getECBExchangeRates(utils.getToday(this.lastUpdatedDate)).then((transactions) => {
             res.json(super.getSuccessResponse({ rates: this.rates }));
         }).catch((err) => {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(super.getErrorResponse(err));
@@ -43,16 +42,15 @@ class CurrencyController extends BaseController {
                     console.log("data already updated for today");
                     resolve();
                 } else {
-                    let ECBService = new ECB(request);
-                    ECBService.getExchangeRates(config.ecb_exchange_url_xml).then((response) => {
+                    this.service.getExchangeRates(config.ecb_exchange_url_xml).then((response) => {
                         this.lastUpdatedDate = response.date;
                         this.rates = response.rates;
                         console.log('currency received now calculating exchanges');
                         return this.calculatePossibleCurrencyTransactions();
                     }).then((transactions) => {
-                        this.insertAllTransactionsToDatabase(transactions);
-                    }).then(() => {
-                        resolve();
+                        return this.insertAllTransactionsToDatabase(transactions);
+                    }).then((transactions) => {
+                        resolve(transactions);
                     }).catch((err) => {
                         reject(err);
                     });
@@ -94,9 +92,9 @@ class CurrencyController extends BaseController {
         return new Promise((resolve, reject) => {
             let currentDate = new Date(this.lastUpdatedDate);
             let transactions = utils.addDateObjectToTransactions(totalTransactions, currentDate);
-            conversionDbModel.insertMany(transactions).then((response) => {
+            this.model.insertMany(transactions).then((response) => {
                 console.log('successfully inserted values to db');
-                resolve();
+                resolve(response);
             }).catch((err) => {
                 console.error('error occurred while inserting docs:', err);
                 reject(err);
@@ -119,9 +117,8 @@ class CurrencyController extends BaseController {
      */
     checkIfTransactionsUpdatedToDb(date) {
         return new Promise((resolve, reject) => {
-
-            conversionDbModel.find({ date: date }).limit(1).exec().then((docs) => {
-                if (docs.length == 1) {
+            this.model.find({ date: date }).limit(1).exec().then((docs) => {
+                if (docs.length === 1) {
                     resolve(true);
                 } else {
                     resolve(false);

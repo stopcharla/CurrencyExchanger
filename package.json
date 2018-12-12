@@ -4,7 +4,7 @@
   "description": "Calculate tax rates",
   "main": "main.js",
   "scripts": {
-    "test": "mocha --timeout 10000"
+    "test": "mocha --timeout 20000"
   },
   "author": "",
   "license": "ISC",
