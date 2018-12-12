@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const should = require('chai').should;
 const Big = require('big-js');
 const config = require('../../src/config/config');
 const ECB = require('../../src/services').getECBService;

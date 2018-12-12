@@ -1,7 +1,6 @@
 "use strict";
 
-const config = require('./config'),
-    express = require('express'),
+const express = require('express'),
     bodyParser = require('body-parser'),
     currencyRoute = require('../routes/currency.route.js');
 
@@ -14,6 +13,6 @@ router.get('/health-check', (req, res) => {
     res.send('OK')
 });
 
-router.use('/v1/currency/',currencyRoute);
+router.use('/v1/currency/', currencyRoute);
 
 module.exports = router;
